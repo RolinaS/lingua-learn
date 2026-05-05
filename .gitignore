@@ -3,3 +3,5 @@ docker-compose.prod.yml
 database/init/01-schema.sql
 config/nginx/ssl/
 config/nginx/nginx.prod.conf
+frontend/node_modules/
+backend/node_modules/
