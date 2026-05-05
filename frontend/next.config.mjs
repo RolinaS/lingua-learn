@@ -1,12 +1,7 @@
-import type { NextConfig } from 'next'
-
-const nextConfig: NextConfig = {
-  // ── Standalone output pour Docker production ──
-  // Génère un serveur Node.js autonome dans .next/standalone
-  // sans avoir besoin de node_modules complets
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   output: 'standalone',
 
-  // ── Sécurité : headers HTTP ───────────────────
   async headers() {
     return [
       {
@@ -20,7 +15,6 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // ── Variables d'environnement exposées au client ──
   env: {
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME ?? 'LinguaLearn',
     NEXT_PUBLIC_APP_VERSION: process.env.NEXT_PUBLIC_APP_VERSION ?? '1.0.0',
