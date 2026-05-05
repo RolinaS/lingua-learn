@@ -1,13 +1,238 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// ─────────────────────────────────────────────────────────────
+// LINGUA-LEARN — Schéma Prisma
+// Base de données PostgreSQL
+// ─────────────────────────────────────────────────────────────
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum LanguageCode {
+  FR // Français
+  EN // Anglais (Royaume-Uni)
+  AR // Arabe
+  ES // Espagnol
+  RU // Russe
+}
+
+enum Theme {
+  LIGHT // Blanc
+  DARK  // Noir
+  OCEAN // Bleu foncé
+}
+
+enum Difficulty {
+  BEGINNER     // Débutant
+  INTERMEDIATE // Intermédiaire
+  ADVANCED     // Avancé
+}
+
+enum ExerciseType {
+  TRANSLATION      // Traduire un mot
+  MULTIPLE_CHOICE  // QCM
+  FILL_IN_BLANK    // Compléter la phrase
+  LISTENING        // Écoute et écris
+}
+
+// ─────────────────────────────────────────────
+// UTILISATEURS
+// ─────────────────────────────────────────────
+
+model User {
+  id               String       @id @default(uuid())
+  email            String       @unique
+  username         String       @unique
+  passwordHash     String       @map("password_hash")
+  avatarUrl        String?      @map("avatar_url")
+
+  // Préférences linguistiques
+  nativeLanguage   LanguageCode @default(FR) @map("native_language")
+  learningLanguage LanguageCode @default(EN) @map("learning_language")
+
+  // Préférences d'affichage
+  theme            Theme        @default(LIGHT)
+
+  // Accessibilité
+  fontSize         Int          @default(16)        // px : 14 | 16 | 18 | 20
+  highContrast     Boolean      @default(false) @map("high_contrast")
+  reduceMotion     Boolean      @default(false) @map("reduce_motion")
+
+  // Timestamps
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt      @map("updated_at")
+  lastLoginAt      DateTime?    @map("last_login_at")
+
+  // Relations
+  progress         UserProgress[]
+  sessions         LearningSession[]
+  refreshTokens    RefreshToken[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// TOKENS DE RAFRAÎCHISSEMENT JWT
+// ─────────────────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// ─────────────────────────────────────────────
+// LANGUES
+// ─────────────────────────────────────────────
+
+model Language {
+  code      LanguageCode @id
+  name      String       // ex: "Français"
+  nativeName String      @map("native_name") // ex: "Français", "العربية"
+  flagEmoji String       @map("flag_emoji")  // ex: "🇫🇷"
+  rtl       Boolean      @default(false)     // Right-to-left (Arabe)
+
+  // Relations
+  words     Word[]
+
+  @@map("languages")
+}
+
+// ─────────────────────────────────────────────
+// CATÉGORIES DE MOTS
+// ─────────────────────────────────────────────
+
+model Category {
+  id          String  @id @default(uuid())
+  slug        String  @unique // ex: "greetings", "numbers", "colors"
+  emoji       String          // ex: "👋", "🔢", "🎨"
+  orderIndex  Int     @map("order_index") // Ordre d'affichage
+
+  // Traductions du nom de la catégorie
+  nameFr      String  @map("name_fr")
+  nameEn      String  @map("name_en")
+  nameAr      String  @map("name_ar")
+  nameEs      String  @map("name_es")
+  nameRu      String  @map("name_ru")
+
+  // Relations
+  words       Word[]
+
+  @@map("categories")
+}
+
+// ─────────────────────────────────────────────
+// MOTS / VOCABULAIRE
+// ─────────────────────────────────────────────
+
+model Word {
+  id           String       @id @default(uuid())
+  languageCode LanguageCode @map("language_code")
+  categoryId   String       @map("category_id")
+
+  term         String       // Mot dans la langue cible
+  phonetic     String?      // Prononciation phonétique ex: /bɒˈʒuː/
+  audioUrl     String?      @map("audio_url")
+  imageUrl     String?      @map("image_url")
+  difficulty   Difficulty   @default(BEGINNER)
+
+  // Traductions vers toutes les langues supportées
+  translationFr String      @map("translation_fr")
+  translationEn String      @map("translation_en")
+  translationAr String      @map("translation_ar")
+  translationEs String      @map("translation_es")
+  translationRu String      @map("translation_ru")
+
+  // Exemple d'utilisation
+  exampleFr    String?      @map("example_fr")
+  exampleEn    String?      @map("example_en")
+  exampleAr    String?      @map("example_ar")
+  exampleEs    String?      @map("example_es")
+  exampleRu    String?      @map("example_ru")
+
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  language     Language     @relation(fields: [languageCode], references: [code])
+  category     Category     @relation(fields: [categoryId], references: [id])
+  progress     UserProgress[]
+
+  @@unique([languageCode, term])
+  @@index([languageCode, categoryId])
+  @@index([difficulty])
+  @@map("words")
+}
+
+// ─────────────────────────────────────────────
+// PROGRESSION UTILISATEUR (Spaced Repetition)
+// ─────────────────────────────────────────────
+
+model UserProgress {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  wordId         String   @map("word_id")
+
+  // Statistiques d'apprentissage
+  score          Int      @default(0)    // 0-100
+  reviewCount    Int      @default(0)    @map("review_count")
+  correctCount   Int      @default(0)    @map("correct_count")
+  incorrectCount Int      @default(0)    @map("incorrect_count")
+
+  // Révision espacée (algorithme SM-2)
+  easeFactor     Float    @default(2.5)  @map("ease_factor")
+  interval       Int      @default(1)    // Jours avant prochaine révision
+  nextReviewAt   DateTime @default(now()) @map("next_review_at")
+  lastReviewedAt DateTime? @map("last_reviewed_at")
+
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt      @map("updated_at")
+
+  // Relations
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word           Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+  @@index([userId, nextReviewAt])
+  @@map("user_progress")
+}
+
+// ─────────────────────────────────────────────
+// SESSIONS D'APPRENTISSAGE
+// ─────────────────────────────────────────────
+
+model LearningSession {
+  id             String       @id @default(uuid())
+  userId         String       @map("user_id")
+
+  languageCode   LanguageCode @map("language_code")
+  exerciseType   ExerciseType @map("exercise_type")
+
+  // Résultats
+  totalWords     Int          @map("total_words")
+  correctAnswers Int          @map("correct_answers")
+  score          Int          // 0-100
+  durationSecs   Int          @map("duration_secs")
+
+  completedAt    DateTime     @default(now()) @map("completed_at")
+
+  // Relations
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, completedAt])
+  @@map("learning_sessions")
 }
