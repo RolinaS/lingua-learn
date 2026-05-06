@@ -1,5 +1,9 @@
-docker-compose.prod.yml
+# VARIABLES D'ENVIRONNEMENT
 .env
+frontend/.env
+backend/.env
+
+docker-compose.prod.yml
 database/init/01-schema.sql
 config/nginx/ssl/
 config/nginx/nginx.prod.conf
