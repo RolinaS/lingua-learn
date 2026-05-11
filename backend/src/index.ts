@@ -38,15 +38,17 @@ app.use(express.urlencoded({ extended: true }))
 // Logs HTTP
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'))
 
-// Rate limiting global
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Trop de requêtes, réessayez dans 15 minutes.' },
-})
-app.use('/api', limiter)
+// Rate limiting global (désactivé en test pour ne pas interférer)
+if (env.NODE_ENV !== 'test') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Trop de requêtes, réessayez dans 15 minutes.' },
+  })
+  app.use('/api', limiter)
+}
 
 // ─────────────────────────────────────────────
 // Routes
@@ -75,9 +77,11 @@ app.use(errorMiddleware)
 // Démarrage
 // ─────────────────────────────────────────────
 
-app.listen(env.PORT, () => {
-  console.log(`🚀 Backend Lingua-Learn démarré sur le port ${env.PORT}`)
-  console.log(`📦 Environnement : ${env.NODE_ENV}`)
-})
+if (env.NODE_ENV !== 'test') {
+  app.listen(env.PORT, () => {
+    console.log(`🚀 Backend Lingua-Learn démarré sur le port ${env.PORT}`)
+    console.log(`📦 Environnement : ${env.NODE_ENV}`)
+  })
+}
 
 export default app

@@ -383,3 +383,49 @@ npm run dev              # Turbopack sur http://localhost:3000
 | `npm run build` | Build de production |
 | `npm start` | Démarrer le serveur de production |
 | `npm run type-check` | Vérification TypeScript |
+
+---
+
+## Tests
+
+### Modifications apportées au code pour les tests
+
+| Fichier | Modification |
+|---------|-------------|
+| `backend/src/utils/sm2.ts` | Logique SM-2 extraite dans un utilitaire pur (plus testable) |
+| `backend/src/routes/progress.routes.ts` | Utilise maintenant `computeSm2()` au lieu d'inline |
+| `backend/src/index.ts` | `app.listen()` et le rate limiter désactivés en mode `test` |
+
+### Fichiers de configuration Jest
+
+| Fichier | Description |
+|---------|-------------|
+| `backend/jest.config.ts` | Preset ts-jest, résolution des alias `@/*`, setup files |
+| `backend/tsconfig.test.json` | Étend le tsconfig principal, relâche `noUnusedLocals` |
+| `backend/package.json` | Scripts `test`, `test:watch`, `test:coverage` + nouvelles devDependencies |
+
+### Tests unitaires (42 tests)
+
+| Fichier | Ce qui est testé |
+|---------|-----------------|
+| `jwt.service.test.ts` | Génération, vérification, expiration des tokens JWT |
+| `auth.service.test.ts` | `register`, `login`, `refresh`, `logout` avec Prisma mocké |
+| `sm2.test.ts` | Algorithme SM-2 : calculs, plancher 1.3, dates |
+| `error.middleware.test.ts` | `AppError`, erreur Prisma P2002, erreur inconnue |
+
+### Tests d'intégration (25 tests, stack HTTP complète avec Supertest)
+
+| Fichier | Ce qui est testé |
+|---------|-----------------|
+| `auth.test.ts` | Register, login, refresh, logout, `/me` — validations + middlewares |
+| `progress.test.ts` | `GET /progress`, `GET /review`, `POST /progress` SM-2 — validations + auth |
+
+### Lancer les tests (via Docker)
+
+```bash
+# Lancer tous les tests
+docker run --rm -v "$(pwd)/backend:/app" -w /app node:20-alpine npx jest
+
+# Lancer avec rapport de couverture
+docker run --rm -v "$(pwd)/backend:/app" -w /app node:20-alpine npx jest --coverage
+```

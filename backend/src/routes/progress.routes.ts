@@ -4,6 +4,7 @@ import { prisma } from '@/config/database'
 import { authMiddleware } from '@/middlewares/auth.middleware'
 import { validateMiddleware } from '@/middlewares/validate.middleware'
 import { AuthRequest } from '@/types'
+import { computeSm2 } from '@/utils/sm2'
 
 export const progressRouter = Router()
 
@@ -68,21 +69,7 @@ progressRouter.post(
         where: { userId_wordId: { userId, wordId } },
       })
 
-      // ── Algorithme SM-2 ──────────────────────
-      const easeFactor      = existing?.easeFactor ?? 2.5
-      const currentInterval = existing?.interval ?? 1
-
-      const newEaseFactor = correct
-        ? Math.max(1.3, easeFactor + 0.1)
-        : Math.max(1.3, easeFactor - 0.2)
-
-      const newInterval = correct
-        ? Math.round(currentInterval * newEaseFactor)
-        : 1
-
-      const nextReview = new Date()
-      nextReview.setDate(nextReview.getDate() + newInterval)
-      // ────────────────────────────────────────
+      const { newEaseFactor, newInterval, nextReviewAt: nextReview } = computeSm2(correct, existing)
 
       const progress = await prisma.userProgress.upsert({
         where:  { userId_wordId: { userId, wordId } },
