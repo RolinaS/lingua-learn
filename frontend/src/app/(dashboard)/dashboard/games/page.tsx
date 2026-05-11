@@ -16,6 +16,17 @@ const GAMES = [
     accent: '#52B788',
   },
   {
+    href: '/dashboard/games/listening',
+    emoji: '🎧',
+    title: 'Écoute',
+    desc: 'Écoutez le mot prononcé et choisissez la bonne traduction parmi 4 propositions.',
+    difficulty: 'Débutant',
+    time: '90 sec',
+    color: 'rgba(236,72,153,0.08)',
+    border: 'rgba(236,72,153,0.2)',
+    accent: '#EC4899',
+  },
+  {
     href: '/dashboard/games/pairs',
     emoji: '🔗',
     title: 'Paires',
@@ -25,6 +36,17 @@ const GAMES = [
     color: 'rgba(59,158,232,0.08)',
     border: 'rgba(59,158,232,0.2)',
     accent: '#3B9EE8',
+  },
+  {
+    href: '/dashboard/games/fill-in-blank',
+    emoji: '✏️',
+    title: 'Texte à trous',
+    desc: 'Lisez la traduction et tapez le mot dans la langue apprise. Testez votre mémoire active !',
+    difficulty: 'Intermédiaire',
+    time: '75 sec',
+    color: 'rgba(155,89,182,0.08)',
+    border: 'rgba(155,89,182,0.2)',
+    accent: '#9B59B6',
   },
   {
     href: '/dashboard/games/anagram',
@@ -124,7 +146,7 @@ export default function GamesPage() {
       {/* Note */}
       <div style={{ marginTop: '2rem', padding: '1rem 1.25rem', background: '#0E0E0E', border: '1px solid #1A1A1A', borderRadius: '12px' }}>
         <p style={{ fontSize: '0.8rem', color: '#444', lineHeight: '1.6' }}>
-          💡 <strong style={{ color: '#666' }}>Conseil :</strong> Commencez par le QCM pour vous familiariser avec les mots, puis progressez vers les Paires et l&apos;Anagramme pour consolider votre mémoire.
+          💡 <strong style={{ color: '#666' }}>Conseil :</strong> Commencez par le <strong style={{ color: '#52B788' }}>QCM</strong> ou l&apos;<strong style={{ color: '#EC4899' }}>Écoute</strong> pour découvrir les mots, progressez avec les <strong style={{ color: '#3B9EE8' }}>Paires</strong> et le <strong style={{ color: '#9B59B6' }}>Texte à trous</strong> pour les mémoriser, puis relevez le défi de l&apos;<strong style={{ color: '#E67E22' }}>Anagramme</strong>.
         </p>
       </div>
     </div>
