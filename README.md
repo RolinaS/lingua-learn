@@ -31,6 +31,12 @@ Plateforme d'apprentissage de langues étrangères par répétition espacée (al
     - [Avec Docker (recommandé)](#avec-docker-recommandé)
     - [Sans Docker (développement local)](#sans-docker-développement-local)
     - [Scripts disponibles](#scripts-disponibles)
+  - [Tests](#tests)
+    - [Modifications apportées au code pour les tests](#modifications-apportées-au-code-pour-les-tests)
+    - [Fichiers de configuration Jest](#fichiers-de-configuration-jest)
+    - [Tests unitaires (42 tests)](#tests-unitaires-42-tests)
+    - [Tests d'intégration (25 tests, stack HTTP complète avec Supertest)](#tests-dintégration-25-tests-stack-http-complète-avec-supertest)
+    - [Lancer les tests (via Docker)](#lancer-les-tests-via-docker)
 
 ---
 
