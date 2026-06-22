@@ -177,7 +177,13 @@ export default function RegisterPage() {
 
               <div>
                 <label className="field-label">Adresse email</label>
-                <input type="email" placeholder="vous@exemple.com" className="input-field" {...register('email')} />
+                <input
+                  type="email"
+                  placeholder="vous@exemple.com"
+                  className="input-field"
+                  suppressHydrationWarning
+                  {...register('email')}
+                />
                 {errors.email && <p className="field-error">{errors.email.message}</p>}
               </div>
 
@@ -189,7 +195,13 @@ export default function RegisterPage() {
 
               <div>
                 <label className="field-label">Mot de passe</label>
-                <input type="password" placeholder="••••••••" className="input-field" {...register('password')} />
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  className="input-field"
+                  suppressHydrationWarning
+                  {...register('password')}
+                />
                 {errors.password && <p className="field-error">{errors.password.message}</p>}
               </div>
 

@@ -166,6 +166,7 @@ export default function LoginPage() {
                   placeholder="vous@exemple.com"
                   autoComplete="email"
                   className="input-field"
+                  suppressHydrationWarning
                   {...register('email')}
                 />
                 {errors.email && (
@@ -191,6 +192,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   autoComplete="current-password"
                   className="input-field"
+                  suppressHydrationWarning
                   {...register('password')}
                 />
                 {errors.password && (

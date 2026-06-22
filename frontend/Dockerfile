@@ -15,7 +15,7 @@ COPY package.json package-lock.json* ./
 # ─────────────────────────────────────────────
 FROM base AS deps
 
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # ─────────────────────────────────────────────
 # STAGE 3 — Développement
