@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useAuthStore } from '@/store/auth.store'
 import { THEME_CLASSES } from '@/lib/utils'
+import ChatButton from '@/components/ui/chatButton'
 
 const navItems = [
   { href: '/dashboard',           label: 'Apprendre',   icon: '📖' },
@@ -118,7 +119,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 overflow-y-auto">
           {children}
         </main>
+
       </div>
+
+      {/* ── Bouton chat IA flottant ── */}
+      <ChatButton />
+
     </div>
   )
 }

@@ -11,6 +11,7 @@ import { languageRouter } from '@/routes/language.routes'
 import { wordRouter } from '@/routes/word.routes'
 import { progressRouter } from '@/routes/progress.routes'
 import { sessionRouter } from '@/routes/session.routes'
+import { chatRouter } from '@/routes/chat.routes'
 import { errorMiddleware } from '@/middlewares/error.middleware'
 import { notFoundMiddleware } from '@/middlewares/notFound.middleware'
 
@@ -60,6 +61,7 @@ app.use('/api/languages', languageRouter)
 app.use('/api/words',     wordRouter)
 app.use('/api/progress',  progressRouter)
 app.use('/api/sessions',  sessionRouter)
+app.use('/api/chat',      chatRouter)
 
 // Health check
 app.get('/api/health', (_req, res) => {

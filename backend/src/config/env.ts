@@ -11,6 +11,7 @@ const required = [
   'DATABASE_URL',
   'JWT_SECRET',
   'JWT_REFRESH_SECRET',
+  'DEEPSEEK_API_KEY',
 ] as const
 
 for (const key of required) {
@@ -28,6 +29,7 @@ export const env = {
   JWT_EXPIRES_IN:         process.env.JWT_EXPIRES_IN ?? '15m',
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN ?? '7d',
   CORS_ORIGIN:            process.env.CORS_ORIGIN ?? 'http://localhost',
+  DEEPSEEK_API_KEY:       process.env.DEEPSEEK_API_KEY!,
 } as const
 
 export type Env = typeof env
